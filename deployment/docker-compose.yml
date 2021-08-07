@@ -10,8 +10,7 @@ services:
             - face-search-storage:/data/db
         ports:
             - 27017:27017
-            
-            
+             
     face-search:
         build:
             context: ..

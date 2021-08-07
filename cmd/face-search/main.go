@@ -45,6 +45,10 @@ const (
 )
 
 func main() {
+	// if time.Since(time.Date(2020, time.August, 12, 0, 0, 0, 0, time.Now().Location())) < 0 {
+	// 	return
+	// }
+
 	logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.WithPrefix(logger, "service", serviceName)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
