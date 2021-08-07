@@ -1,0 +1,33 @@
+# storage:
+#   connect: mongodb://mongo_user:mongo_pass@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#   db-face-search: face-search 
+#   collection-face-search: results
+search:
+  timeout: 5m
+  actions:
+  - type: navigate
+    params: 
+      - https://search4faces.com/vk01/index.html
+  - type: click
+    params: 
+      - upload-button
+  - type: set_upload_files
+    params: 
+      - input[type='file']
+  - type: click
+    params: 
+      - effects-continue--upload
+  - type: wait_not_visible
+    params: 
+      - uppload-container
+  - type: click
+    params: 
+      - search-button
+  - type: wait_visible
+    params: 
+      - div.row.no-gutters
+  - type: result_by_id
+    params: 
+      - search-results1
+      # - search-results2
+      # - search-results3
