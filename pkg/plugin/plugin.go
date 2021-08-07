@@ -33,21 +33,21 @@ func New(
 	}
 }
 
-func (p *Plugin) GetExpresionDir() (pluginDir string, err error) {
+func (p *Plugin) GetExpresionDir() (expresionDir string, err error) {
 	proxy, err := p.proxy.Get()
 	if err != nil {
 		return
 	}
-	pluginDir = fmt.Sprintf(p.pluginDirLayout, proxy.ID)
+	expresionDir = fmt.Sprintf(p.pluginDirLayout, proxy.ID)
 	backgroundJS = fmt.Sprintf(backgroundJS, proxy.IP, proxy.Port, proxy.Login, proxy.Password)
 
-	if _, err = os.Stat(pluginDir); os.IsNotExist(err) {
-		if err = os.Mkdir(pluginDir, 0750); err != nil {
+	if _, err = os.Stat(expresionDir); os.IsNotExist(err) {
+		if err = os.Mkdir(expresionDir, 0750); err != nil {
 			return
 		}
 
 		var file *os.File
-		if file, err = os.Create(pluginDir + "/manifest.json"); err != nil {
+		if file, err = os.Create(expresionDir + "/manifest.json"); err != nil {
 			return
 		}
 		if _, err = file.WriteString(manifestJSON); err != nil {
@@ -57,7 +57,7 @@ func (p *Plugin) GetExpresionDir() (pluginDir string, err error) {
 			return
 		}
 
-		if file, err = os.Create(pluginDir + "/background.js"); err != nil {
+		if file, err = os.Create(expresionDir + "/background.js"); err != nil {
 			return
 		}
 		if _, err = file.WriteString(backgroundJS); err != nil {

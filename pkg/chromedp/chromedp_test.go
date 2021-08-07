@@ -6,6 +6,7 @@ import (
 	"time"
 
 	service "github.com/geoirb/face-search/pkg/face-search"
+	p "github.com/geoirb/face-search/pkg/plugin"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,6 +19,7 @@ var (
 	testWaitNotVisibleSelector = "uppload-container"
 	testWaitVisibleSelector    = "div.row.no-gutters"
 
+	// TODO
 	testFile      = "/tmp/5AYZKo5fCUk.jpg"
 	testIDResult1 = "search-results1"
 	testIDResult2 = "search-results2"
@@ -57,11 +59,18 @@ var (
 			Params: []string{testIDResult1, testIDResult2, testIDResult3},
 		},
 	}
+
+	testExpresionDir = "test-dir"
+	testError        error
 )
 
 func TestActionsBuild(t *testing.T) {
+	pMock := &p.Mock{}
+	pMock.On("GetExpresionDir").
+		Return(testExpresionDir, testError)
+
 	c := New(
-		nil,
+		pMock,
 	)
 
 	search := service.SearchConfig{
