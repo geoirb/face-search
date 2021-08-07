@@ -28,7 +28,7 @@ import (
 type configuration struct {
 	HttpPort string `envconfig:"HTTP_PORT" default:"8081"`
 
-	ConfigFile string `envconfig:"CONFIG_FILE" default:"/config/config.yml"`
+	ConfigFile string `envconfig:"CONFIG_FILE" default:"./config.yml"`
 
 	StorageConnect     string        `envconfig:"STORAGE_CONNECT" default:"mongodb://face-search:face-search@127.0.0.1:27017"`
 	StorageDatabase    string        `envconfig:"STORAGE_DATABASE" default:"face-search"`
