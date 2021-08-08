@@ -4,9 +4,15 @@ import (
 	"time"
 )
 
+var (
+	InProccess = "in_progress"
+	Fail       = "fail"
+	Success    = "success"
+)
+
 // Result ...
 type Result struct {
-	Status    bool
+	Status    string
 	Error     string
 	UUID      string
 	PhotoHash string
@@ -25,9 +31,9 @@ type Profile struct {
 
 // SearchConfig ...
 type SearchConfig struct {
-	Timeout time.Duration
-	Actions []Action
-	FilePath    string
+	Timeout  time.Duration
+	Actions  []Action
+	FilePath string
 }
 
 // Action for search.

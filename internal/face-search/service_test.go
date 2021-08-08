@@ -38,7 +38,7 @@ var (
 	}
 
 	testResult = service.Result{
-		Status:    true,
+		Status:    service.Success,
 		UUID:      testUUID,
 		PhotoHash: testFileHash,
 		Profiles:  testProfiles,
@@ -212,7 +212,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Get", filter).
 			Return(service.Result{}, errNilTest)
 		testResult = service.Result{
-			Status:    true,
+			Status:    service.Success,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 			Profiles:  testProfiles,
@@ -254,7 +254,7 @@ func TestFaceSearch(t *testing.T) {
 		}
 
 		expectedResult := service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 		}
@@ -286,7 +286,7 @@ func TestFaceSearch(t *testing.T) {
 		}
 
 		failedResult := service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -297,7 +297,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
 		testResult = service.Result{
-			Status:    true,
+			Status:    service.Success,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 			Profiles:  testProfiles,
@@ -368,7 +368,7 @@ func TestFaceSearch(t *testing.T) {
 		}
 
 		failedResult := service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -380,7 +380,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
 		testResult = service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			UUID:      testUUID,
 			Error:     errTest.Error(),
 			PhotoHash: testFileHash,
@@ -449,7 +449,7 @@ func TestFaceSearch(t *testing.T) {
 		}
 
 		failedResult := service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -460,7 +460,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
 		testResult = service.Result{
-			Status:    false,
+			Status:    service.Fail,
 			UUID:      testUUID,
 			Error:     errTest.Error(),
 			PhotoHash: testFileHash,

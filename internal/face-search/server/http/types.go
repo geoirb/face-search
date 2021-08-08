@@ -19,7 +19,7 @@ type startFaceSearch struct {
 }
 
 type faceSearch struct {
-	Status    bool      `json:"status"`
+	Status    string    `json:"status"`
 	Error     string    `json:"error,omitempty"`
 	UUID      string    `json:"uuid"`
 	PhotoHash string    `json:"photo_hash"`

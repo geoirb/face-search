@@ -122,7 +122,7 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result Result, er
 	filter := FaceSearchFilter{
 		PhotoHash: &hash,
 	}
-	if result, err = s.storage.Get(ctx, filter); err == nil && result.Status {
+	if result, err = s.storage.Get(ctx, filter); err == nil && result.Status == Success {
 		return
 	}
 	if err != nil && err != ErrFaceSearchResultNotFound {
@@ -131,9 +131,19 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result Result, er
 	}
 	err = nil
 
+	result.Status = InProccess
 	result.PhotoHash = hash
+	if result.CreateAt == 0 {
+		result.CreateAt = s.timeFunc()
+	} else {
+		result.UpdateAt = s.timeFunc()
+	}
+
 	if len(result.UUID) == 0 {
 		result.UUID = s.uuidFunc()
+	}
+	if err = s.storage.Save(ctx, result); err != nil {
+		level.Error(logger).Log("msg", "save result of face search", "err", err)
 	}
 
 	go func(result Result, file File, logger log.Logger) {
@@ -152,14 +162,14 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result Result, er
 		}
 		payloadResult, err := s.searcher.Face(search)
 		if err != nil {
-			result.Status = false
+			result.Status = Fail
 			result.Error = err.Error()
 			level.Error(logger).Log("msg", "face search", "err", err)
 		} else {
-			result.Status = true
+			result.Status = Success
 			result.Error = ""
 			if result.Profiles, err = s.parser.GetProfileList(payloadResult); err != nil {
-				result.Status = false
+				result.Status = Fail
 				result.Error = err.Error()
 				result.Profiles = nil
 				level.Error(logger).Log("msg", "parse face search result", "err", err)

@@ -1,7 +1,7 @@
 package mongo
 
 type faceSearch struct {
-	Status    bool      `bson:"status"`
+	Status    string    `bson:"status"`
 	Error     string    `bson:"error"`
 	UUID      string    `bson:"uuid"`
 	PhotoHash string    `bson:"photo_hash"`
