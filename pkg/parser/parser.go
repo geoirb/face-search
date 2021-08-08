@@ -9,10 +9,12 @@ import (
 	service "github.com/geoirb/face-search/pkg/face-search"
 )
 
+// Parser search results ...
 type Parser struct {
 	profileReg *regexp.Regexp
 }
 
+// New parser.
 func New(layout string) (p *Parser, err error) {
 	p = &Parser{}
 	p.profileReg, err = regexp.Compile(layout)

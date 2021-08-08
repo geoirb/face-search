@@ -26,6 +26,7 @@ func NewFacade(downloadDir string) *Facade {
 	return f
 }
 
+// GetPath of file.
 func (f *Facade) GetPath(file service.File) (path string, err error) {
 	fileName := f.regexpfileName.FindAllStringSubmatch(file.URL, -1)
 	if len(fileName) != 1 && len(fileName[0]) != 2 {
@@ -43,10 +44,12 @@ func (f *Facade) GetPath(file service.File) (path string, err error) {
 	return
 }
 
+// Delete file.
 func (f *Facade) Delete(file service.File) error {
 	return os.Remove(file.Path)
 }
 
+// GetHah by file.
 func (f *Facade) GetHash(fl service.File) (hash string, err error) {
 	file, err := os.Open(fl.Path)
 	if err != nil {

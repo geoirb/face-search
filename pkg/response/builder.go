@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 )
 
-func Builder(payload interface{}, err error) ([]byte, error) {
+// Build response to payload and error.
+func Build(payload interface{}, err error) ([]byte, error) {
 	response := response{
 		IsOk: err == nil,
 	}

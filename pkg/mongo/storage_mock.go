@@ -8,18 +8,18 @@ import (
 	service "github.com/geoirb/face-search/pkg/face-search"
 )
 
-// MockMongo ...
-type MockMongo struct {
+// Mock ...
+type Mock struct {
 	mock.Mock
 }
 
 // Save ...
-func (m *MockMongo) Save(ctx context.Context, fs service.FaceSearch) error {
+func (m *Mock) Save(ctx context.Context, fs service.FaceSearch) error {
 	return m.Called(fs).Error(0)
 }
 
 // Get ...
-func (m *MockMongo) Get(ctx context.Context, filter service.FaceSearchFilter) (service.FaceSearch, error) {
+func (m *Mock) Get(ctx context.Context, filter service.FaceSearchFilter) (service.FaceSearch, error) {
 	args := m.Called(filter)
 
 	if res, ok := args.Get(0).(service.FaceSearch); ok {

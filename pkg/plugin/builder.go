@@ -17,23 +17,26 @@ type proxy interface {
 	Get() (Proxy, error)
 }
 
-type Plugin struct {
+// Builder of plugin
+type Builder struct {
 	proxy proxy
 
 	pluginDirLayout string
 }
 
-func New(
+// NewBuilder ...
+func NewBuilder(
 	proxy proxy,
 	pluginDirLayout string,
-) *Plugin {
-	return &Plugin{
+) *Builder {
+	return &Builder{
 		proxy:           proxy,
 		pluginDirLayout: pluginDirLayout,
 	}
 }
 
-func (p *Plugin) GetExpresionDir() (expresionDir string, err error) {
+// GetExpresionDir ...
+func (p *Builder) GetExpresionDir() (expresionDir string, err error) {
 	proxy, err := p.proxy.Get()
 	if err != nil {
 		return

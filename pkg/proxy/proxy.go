@@ -33,13 +33,16 @@ var (
 	}
 )
 
+// Proxy ...
 type Proxy struct {
 }
 
+// New proxy.
 func New() *Proxy {
 	return &Proxy{}
 }
 
+// Get proxy.
 func (p *Proxy) Get() (plugin.Proxy, error) {
 	i := rand.Intn(len(proxys))
 	return proxys[i], nil

@@ -45,10 +45,6 @@ const (
 )
 
 func main() {
-	// if time.Since(time.Date(2020, time.August, 12, 0, 0, 0, 0, time.Now().Location())) < 0 {
-	// 	return
-	// }
-
 	logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.WithPrefix(logger, "service", serviceName)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
@@ -93,7 +89,7 @@ func main() {
 		cfg.DownloadDir,
 	)
 
-	plugin := plugin.New(
+	plugin := plugin.NewBuilder(
 		proxy.New(),
 		cfg.PluginDirLayout,
 	)
@@ -124,7 +120,7 @@ func main() {
 	)
 
 	router := router.New()
-	http.Routing(router, svc, response.Builder)
+	http.Routing(router, svc, response.Build)
 
 	httpServer := &fasthttp.Server{
 		Handler:          router.Handler,

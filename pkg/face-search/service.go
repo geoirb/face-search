@@ -10,9 +10,15 @@ import (
 )
 
 type Service interface {
+	// GetSearchConfig returns current search config.
 	GetSearchConfig(ctx context.Context) (cfg SearchConfig, err error)
+	// UpdateSearchConfig ...
 	UpdateSearchConfig(ctx context.Context, newSearch SearchConfig) error
-	FaceSearch(ctx context.Context, sfs StartFaceSearch) (result FaceSearch, err error)
+	// FaceSearch start face search, if the previous search for params failed
+	// or params is new.
+	// If the previous search for params success, FaceSearch returns result of face search.
+	FaceSearch(ctx context.Context, params Search) (result FaceSearch, err error)
+	// GetFaceSearchResult returns results face search by tfs.
 	GetFaceSearchResult(ctx context.Context, tfs TaskFaceSearch) (result FaceSearch, err error)
 }
 
@@ -50,6 +56,7 @@ type service struct {
 	logger log.Logger
 }
 
+// NewService returns face search service.
 func NewService(
 	searchConfig SearchConfig,
 	timeFunc func() int64,
@@ -92,7 +99,7 @@ func (s *service) UpdateSearchConfig(ctx context.Context, cfg SearchConfig) erro
 	return nil
 }
 
-func (s *service) FaceSearch(ctx context.Context, sfs StartFaceSearch) (result FaceSearch, err error) {
+func (s *service) FaceSearch(ctx context.Context, sfs Search) (result FaceSearch, err error) {
 	logger := log.WithPrefix(s.logger, "method", "FaceSearch")
 
 	path, err := s.file.GetPath(sfs.File)

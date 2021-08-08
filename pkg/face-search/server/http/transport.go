@@ -77,7 +77,7 @@ func newFaceSearchTransport(builder builder) *faceSearchTransport {
 	}
 }
 
-func (t *faceSearchTransport) DecodeRequest(req *fasthttp.Request) (sfs search.StartFaceSearch, err error) {
+func (t *faceSearchTransport) DecodeRequest(req *fasthttp.Request) (sfs search.Search, err error) {
 	request := startFaceSearch{}
 	if err = json.Unmarshal(req.Body(), &request); err != nil {
 		return

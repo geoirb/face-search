@@ -42,8 +42,8 @@ type FaceSearchFilter struct {
 	PhotoHash *string
 }
 
-// StartFaceSearch ...
-type StartFaceSearch struct {
+// Search ...
+type Search struct {
 	File
 }
 
