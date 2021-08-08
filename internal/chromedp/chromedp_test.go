@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
-	p "github.com/geoirb/face-search/pkg/plugin"
+	service "github.com/geoirb/face-search/internal/face-search"
+	p "github.com/geoirb/face-search/internal/plugin"
 	"github.com/stretchr/testify/assert"
 )
 

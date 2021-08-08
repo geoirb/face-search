@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 	"github.com/stretchr/testify/assert"
 )
 

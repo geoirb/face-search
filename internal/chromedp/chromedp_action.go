@@ -9,7 +9,7 @@ import (
 	"github.com/chromedp/chromedp"
 	"gopkg.in/yaml.v2"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 type buildFunc func(params []string) (chromedp.Action, error)
@@ -19,7 +19,7 @@ var actionFunc = map[string]buildFunc{
 	"click":            click,
 	"wait_not_visible": waitNotVisible,
 	"wait_visible":     waitVisible,
-	"sleep":             sleep,
+	"sleep":            sleep,
 }
 
 func (c *Chromedp) actionsBuild(searchActions []service.Action, file string, result interface{}) (actions []chromedp.Action, err error) {

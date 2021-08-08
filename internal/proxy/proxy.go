@@ -4,7 +4,7 @@ package proxy
 import (
 	"math/rand"
 
-	"github.com/geoirb/face-search/pkg/plugin"
+	"github.com/geoirb/face-search/internal/plugin"
 )
 
 var (

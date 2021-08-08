@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strconv"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Parser search results ...

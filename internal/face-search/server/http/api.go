@@ -5,7 +5,7 @@ import (
 
 	"github.com/fasthttp/router"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 const (

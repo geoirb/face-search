@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	faceSearch "github.com/geoirb/face-search/pkg/face-search"
-	"github.com/geoirb/face-search/pkg/mongo"
+	faceSearch "github.com/geoirb/face-search/internal/face-search"
+	"github.com/geoirb/face-search/internal/mongo"
 )
 
 var (

@@ -7,7 +7,7 @@ import (
 
 	"github.com/chromedp/chromedp"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 type plugin interface {

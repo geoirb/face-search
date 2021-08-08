@@ -3,7 +3,7 @@ package http
 import (
 	"github.com/valyala/fasthttp"
 
-	search "github.com/geoirb/face-search/pkg/face-search"
+	search "github.com/geoirb/face-search/internal/face-search"
 )
 
 type getConfigServe struct {

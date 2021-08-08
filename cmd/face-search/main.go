@@ -13,16 +13,16 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/valyala/fasthttp"
 
-	"github.com/geoirb/face-search/pkg/chromedp"
-	"github.com/geoirb/face-search/pkg/config"
-	faceSearch "github.com/geoirb/face-search/pkg/face-search"
-	"github.com/geoirb/face-search/pkg/face-search/server/http"
-	"github.com/geoirb/face-search/pkg/file"
-	"github.com/geoirb/face-search/pkg/mongo"
-	"github.com/geoirb/face-search/pkg/parser"
-	"github.com/geoirb/face-search/pkg/plugin"
-	"github.com/geoirb/face-search/pkg/proxy"
-	"github.com/geoirb/face-search/pkg/response"
+	"github.com/geoirb/face-search/internal/chromedp"
+	"github.com/geoirb/face-search/internal/config"
+	faceSearch "github.com/geoirb/face-search/internal/face-search"
+	"github.com/geoirb/face-search/internal/face-search/server/http"
+	"github.com/geoirb/face-search/internal/file"
+	"github.com/geoirb/face-search/internal/mongo"
+	"github.com/geoirb/face-search/internal/parser"
+	"github.com/geoirb/face-search/internal/plugin"
+	"github.com/geoirb/face-search/internal/proxy"
+	"github.com/geoirb/face-search/internal/response"
 )
 
 type configuration struct {

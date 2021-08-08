@@ -8,7 +8,7 @@ import (
 	"os"
 	"regexp"
 
-	service "github.com/geoirb/face-search/pkg/face-search"
+	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Facade for work with file
