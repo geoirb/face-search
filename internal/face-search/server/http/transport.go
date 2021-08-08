@@ -87,7 +87,7 @@ func (t *faceSearchTransport) DecodeRequest(req *fasthttp.Request) (sfs search.S
 	return
 }
 
-func (t *faceSearchTransport) EncodeResponse(res *fasthttp.Response, result search.FaceSearch, err error) {
+func (t *faceSearchTransport) EncodeResponse(res *fasthttp.Response, result search.Result, err error) {
 	response := faceSearch{
 		Status:    result.Status,
 		Error:     result.Error,
@@ -119,7 +119,7 @@ func (t *getFaceSearchResultTransport) DecodeRequest(ctx *fasthttp.RequestCtx, r
 	return
 }
 
-func (t *getFaceSearchResultTransport) EncodeResponse(res *fasthttp.Response, result search.FaceSearch, err error) {
+func (t *getFaceSearchResultTransport) EncodeResponse(res *fasthttp.Response, result search.Result, err error) {
 	response := faceSearch{
 		Status:    result.Status,
 		Error:     result.Error,

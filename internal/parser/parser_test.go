@@ -36,6 +36,7 @@ var (
 func TestParse(t *testing.T) {
 	p, err := New(profileLayout)
 	assert.NoError(t, err)
-	actualProfiles := p.GetProfileList(payload)
+	actualProfiles, err := p.GetProfileList(payload)
+	assert.NoError(t, err)
 	assert.Equal(t, expectedProfile, actualProfiles)
 }

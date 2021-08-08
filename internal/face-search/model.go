@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// FaceSearch ...
-type FaceSearch struct {
+// Result ...
+type Result struct {
 	Status    bool
 	Error     string
 	UUID      string

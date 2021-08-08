@@ -54,7 +54,7 @@ type faceSearchServe struct {
 func (s *faceSearchServe) handlerHTTP(ctx *fasthttp.RequestCtx) {
 	sfs, err := s.transport.DecodeRequest(&ctx.Request)
 
-	var result search.FaceSearch
+	var result search.Result
 	if err == nil {
 		result, err = s.svc.FaceSearch(ctx, sfs)
 	}
@@ -77,7 +77,7 @@ type getFaceSearchResultServe struct {
 func (s *getFaceSearchResultServe) handlerHTTP(ctx *fasthttp.RequestCtx) {
 	tfs, err := s.transport.DecodeRequest(ctx, &ctx.Request)
 
-	var result search.FaceSearch
+	var result search.Result
 	if err == nil {
 		result, err = s.svc.GetFaceSearchResult(ctx, tfs)
 	}

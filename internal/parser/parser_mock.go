@@ -12,9 +12,10 @@ type Mock struct {
 }
 
 // GetProfileList ...
-func (m *Mock) GetProfileList(payload []byte) []service.Profile {
-	if p, ok := m.Called(payload).Get(0).([]service.Profile); ok {
-		return p
+func (m *Mock) GetProfileList(payload []byte) ([]service.Profile, error) {
+	args := m.Called(payload)
+	if p, ok := args.Get(0).([]service.Profile); ok {
+		return p, args.Error(1)
 	}
-	return nil
+	return nil, nil
 }

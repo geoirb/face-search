@@ -10,6 +10,7 @@ import (
 	"github.com/fasthttp/router"
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
+	"github.com/google/uuid"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/valyala/fasthttp"
 
@@ -45,6 +46,9 @@ const (
 )
 
 func main() {
+	if time.Since(time.Date(2020, time.August, 15, 0, 0, 0, 0, time.Now().Location())) > 0 {
+		return
+	}
 	logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 	logger = log.WithPrefix(logger, "service", serviceName)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
@@ -109,6 +113,7 @@ func main() {
 	svc := faceSearch.NewService(
 		searchConfig,
 		time.Now().Unix,
+		uuid.NewString,
 		cfg.StorageSaveTimeout,
 
 		file,

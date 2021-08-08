@@ -28,19 +28,19 @@ func (m *Mock) UpdateSearchConfig(ctx context.Context, newSearch SearchConfig) e
 }
 
 // FaceSearch ...
-func (m *Mock) FaceSearch(ctx context.Context, sfs Search) (FaceSearch, error) {
+func (m *Mock) FaceSearch(ctx context.Context, sfs Search) (Result, error) {
 	args := m.Called(sfs)
-	if a, ok := args.Get(0).(FaceSearch); ok {
+	if a, ok := args.Get(0).(Result); ok {
 		return a, args.Error(1)
 	}
-	return FaceSearch{}, nil
+	return Result{}, nil
 }
 
 // GetFaceSearchResult ...
-func (m *Mock) GetFaceSearchResult(ctx context.Context, tfs TaskFaceSearch) (FaceSearch, error) {
+func (m *Mock) GetFaceSearchResult(ctx context.Context, tfs TaskFaceSearch) (Result, error) {
 	args := m.Called(tfs)
-	if a, ok := args.Get(0).(FaceSearch); ok {
+	if a, ok := args.Get(0).(Result); ok {
 		return a, args.Error(1)
 	}
-	return FaceSearch{}, nil
+	return Result{}, nil
 }

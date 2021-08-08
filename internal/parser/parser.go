@@ -2,7 +2,6 @@ package parser
 
 import (
 	"bytes"
-	"log"
 	"regexp"
 	"strconv"
 
@@ -22,10 +21,10 @@ func New(layout string) (p *Parser, err error) {
 }
 
 // GetProfileList from payload.
-func (p *Parser) GetProfileList(payload []byte) []service.Profile {
+func (p *Parser) GetProfileList(payload []byte) ([]service.Profile, error) {
 	str, err := strconv.Unquote(string(payload))
 	if err != nil {
-		log.Fatalln(err)
+		str = string(payload)
 	}
 	payload = bytes.ReplaceAll([]byte(str), []byte("\\"), []byte(""))
 
@@ -44,5 +43,5 @@ func (p *Parser) GetProfileList(payload []byte) []service.Profile {
 			)
 		}
 	}
-	return profiles
+	return profiles, nil
 }

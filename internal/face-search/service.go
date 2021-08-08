@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"github.com/google/uuid"
 )
 
 type Service interface {
@@ -17,9 +16,9 @@ type Service interface {
 	// FaceSearch start face search, if the previous search for params failed
 	// or params is new.
 	// If the previous search for params success, FaceSearch returns result of face search.
-	FaceSearch(ctx context.Context, params Search) (result FaceSearch, err error)
+	FaceSearch(ctx context.Context, params Search) (result Result, err error)
 	// GetFaceSearchResult returns results face search by tfs.
-	GetFaceSearchResult(ctx context.Context, tfs TaskFaceSearch) (result FaceSearch, err error)
+	GetFaceSearchResult(ctx context.Context, tfs TaskFaceSearch) (result Result, err error)
 }
 
 type file interface {
@@ -29,8 +28,8 @@ type file interface {
 }
 
 type storage interface {
-	Save(ctx context.Context, result FaceSearch) error
-	Get(ctx context.Context, filter FaceSearchFilter) (FaceSearch, error)
+	Save(ctx context.Context, result Result) error
+	Get(ctx context.Context, filter FaceSearchFilter) (Result, error)
 }
 
 type searcher interface {
@@ -38,12 +37,13 @@ type searcher interface {
 }
 
 type parser interface {
-	GetProfileList(payload []byte) []Profile
+	GetProfileList(payload []byte) ([]Profile, error)
 }
 
 type service struct {
 	search             SearchConfig
 	timeFunc           func() int64
+	uuidFunc           func() string
 	storageSaveTimeout time.Duration
 
 	file     file
@@ -60,6 +60,7 @@ type service struct {
 func NewService(
 	searchConfig SearchConfig,
 	timeFunc func() int64,
+	uuidFunc func() string,
 	storageSaveTimeout time.Duration,
 
 	file file,
@@ -72,6 +73,7 @@ func NewService(
 	return &service{
 		search:             searchConfig,
 		timeFunc:           timeFunc,
+		uuidFunc:           uuidFunc,
 		storageSaveTimeout: storageSaveTimeout,
 
 		file:     file,
@@ -99,7 +101,7 @@ func (s *service) UpdateSearchConfig(ctx context.Context, cfg SearchConfig) erro
 	return nil
 }
 
-func (s *service) FaceSearch(ctx context.Context, sfs Search) (result FaceSearch, err error) {
+func (s *service) FaceSearch(ctx context.Context, sfs Search) (result Result, err error) {
 	logger := log.WithPrefix(s.logger, "method", "FaceSearch")
 
 	path, err := s.file.GetPath(sfs.File)
@@ -130,16 +132,18 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result FaceSearch
 	err = nil
 
 	result.PhotoHash = hash
-
 	if len(result.UUID) == 0 {
-		result.UUID = uuid.NewString()
+		result.UUID = s.uuidFunc()
 	}
-	go func(result FaceSearch, file File) {
+
+	go func(result Result, file File, logger log.Logger) {
 		s.queue <- struct{}{}
 		defer func() {
 			s.file.Delete(file)
 			<-s.queue
+			level.Info(logger).Log("msg", "finish face search")
 		}()
+		level.Info(logger).Log("msg", "start face search")
 
 		search := SearchConfig{
 			Timeout:  s.search.Timeout,
@@ -147,15 +151,19 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result FaceSearch
 			FilePath: file.Path,
 		}
 		payloadResult, err := s.searcher.Face(search)
-
 		if err != nil {
 			result.Status = false
 			result.Error = err.Error()
-			level.Error(logger).Log("msg", "face search", "uuid", result.UUID, "err", err)
+			level.Error(logger).Log("msg", "face search", "err", err)
 		} else {
 			result.Status = true
 			result.Error = ""
-			result.Profiles = s.parser.GetProfileList(payloadResult)
+			if result.Profiles, err = s.parser.GetProfileList(payloadResult); err != nil {
+				result.Status = false
+				result.Error = err.Error()
+				result.Profiles = nil
+				level.Error(logger).Log("msg", "parse face search result", "err", err)
+			}
 		}
 
 		if result.CreateAt == 0 {
@@ -167,19 +175,19 @@ func (s *service) FaceSearch(ctx context.Context, sfs Search) (result FaceSearch
 		ctx, cancel := context.WithTimeout(context.Background(), s.storageSaveTimeout)
 		defer cancel()
 		if err = s.storage.Save(ctx, result); err != nil {
-			level.Error(logger).Log("save result of face search", "uuid", result.UUID, "err", err)
+			level.Error(logger).Log("msg", "save result of face search", "err", err)
 		}
-	}(result, file)
+	}(result, file, log.WithPrefix(logger, "uuid", result.UUID))
 	return
 }
 
-func (s *service) GetFaceSearchResult(ctx context.Context, tsf TaskFaceSearch) (result FaceSearch, err error) {
+func (s *service) GetFaceSearchResult(ctx context.Context, tsf TaskFaceSearch) (r Result, err error) {
 	logger := log.WithPrefix(s.logger, "method", "GetFaceSearchResult")
 
 	filter := FaceSearchFilter{
 		UUID: &tsf.UUID,
 	}
-	if result, err = s.storage.Get(ctx, filter); err != nil {
+	if r, err = s.storage.Get(ctx, filter); err != nil {
 		level.Error(logger).Log("get result from db", "uuid", filter.UUID, "err", err)
 	}
 	return

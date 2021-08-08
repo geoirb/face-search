@@ -1,7 +1,6 @@
 package chromedp
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -78,7 +77,6 @@ func TestActionsBuild(t *testing.T) {
 		Actions:  testActions,
 		FilePath: testFile,
 	}
-	result, err := c.Face(search)
-	assert.NoError(t, err)
-	fmt.Println(string(result))
+	_, err := c.Face(search)
+	assert.Error(t, err)
 }

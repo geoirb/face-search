@@ -45,7 +45,7 @@ func NewStorage(
 }
 
 // Save face search result.
-func (m *Storage) Save(ctx context.Context, result service.FaceSearch) (err error) {
+func (m *Storage) Save(ctx context.Context, result service.Result) (err error) {
 
 	faceSearch := faceSearch{
 		Status:    result.Status,
@@ -73,7 +73,7 @@ func (m *Storage) Save(ctx context.Context, result service.FaceSearch) (err erro
 }
 
 // Get face search result by filter.
-func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (service.FaceSearch, error) {
+func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (service.Result, error) {
 	f := make(bson.M)
 	if filter.UUID != nil {
 		f["uuid"] = *filter.UUID
@@ -88,10 +88,10 @@ func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (ser
 		if mongo.ErrNoDocuments == err {
 			err = service.ErrFaceSearchResultNotFound
 		}
-		return service.FaceSearch{}, err
+		return service.Result{}, err
 	}
 
-	res := service.FaceSearch{
+	res := service.Result{
 		Status:    faceSearchResult.Status,
 		Error:     faceSearchResult.Error,
 		UUID:      faceSearchResult.UUID,
