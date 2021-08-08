@@ -5,16 +5,13 @@
 ```json
 {
     "is_ok": bool,
-    "error": "",
     "payload": {},
 }
 ```
 
 > is_ok - признак успешности запроса
 > 
-> error - сообщение об ошибке, если is_ok=false
-> 
-> payload - данные, если is_ok=true
+> payload - данные, если is_ok=true, либо сообщение об ошибке, если is_ok=false
 
 ## Получение настройки поиска лиц
 
