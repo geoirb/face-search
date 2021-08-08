@@ -23,8 +23,8 @@ type Service interface {
 
 type file interface {
 	GetPath(file File) (path string, err error)
-	Delete(file File) (err error)
 	GetHash(file File) (hash string, err error)
+	Delete(file File) (err error)
 }
 
 type storage interface {
@@ -59,8 +59,6 @@ type service struct {
 // NewService returns face search service.
 func NewService(
 	searchConfig SearchConfig,
-	timeFunc func() int64,
-	uuidFunc func() string,
 	storageSaveTimeout time.Duration,
 
 	file file,
@@ -72,8 +70,6 @@ func NewService(
 ) Service {
 	return &service{
 		search:             searchConfig,
-		timeFunc:           timeFunc,
-		uuidFunc:           uuidFunc,
 		storageSaveTimeout: storageSaveTimeout,
 
 		file:     file,

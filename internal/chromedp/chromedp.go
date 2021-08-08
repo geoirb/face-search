@@ -7,7 +7,7 @@ import (
 
 	"github.com/chromedp/chromedp"
 
-	service "github.com/geoirb/face-search/internal/face-search"
+	faceSearch "github.com/geoirb/face-search/internal/face-search"
 )
 
 type plugin interface {
@@ -24,7 +24,7 @@ func New(plugin plugin) *Chromedp {
 	}
 }
 
-func (c *Chromedp) Face(search service.SearchConfig) (result []byte, err error) {
+func (c *Chromedp) Face(search faceSearch.SearchConfig) (result []byte, err error) {
 	timeoutContext, cancelAllocCtx, cancelNewContext, cancelWithTimeout, err := c.getTimeoutContext(search.Timeout)
 	if err != nil {
 		return
