@@ -3,9 +3,8 @@ package chromedp
 import (
 	"time"
 
+	faceSearch "github.com/geoirb/face-search/internal/face-search"
 	"github.com/stretchr/testify/mock"
-
-	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Mock ...
@@ -14,7 +13,7 @@ type Mock struct {
 }
 
 // FaceSearch ...
-func (m *Mock) Face(search service.SearchConfig) ([]byte, error) {
+func (m *Mock) Face(search faceSearch.SearchConfig) ([]byte, error) {
 	args := m.Called(search)
 
 	time.Sleep(search.Timeout)

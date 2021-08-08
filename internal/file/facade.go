@@ -8,7 +8,7 @@ import (
 	"os"
 	"regexp"
 
-	service "github.com/geoirb/face-search/internal/face-search"
+	search "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Facade for work with file
@@ -27,10 +27,10 @@ func NewFacade(downloadDir string) *Facade {
 }
 
 // GetPath of file.
-func (f *Facade) GetPath(file service.File) (path string, err error) {
+func (f *Facade) GetPath(file search.File) (path string, err error) {
 	fileName := f.regexpfileName.FindAllStringSubmatch(file.URL, -1)
 	if len(fileName) != 1 && len(fileName[0]) != 2 {
-		err = service.ErrFileNameNotFound
+		err = search.ErrFileNameNotFound
 		return
 	}
 	path = f.downloadDir + fileName[0][1]
@@ -39,18 +39,18 @@ func (f *Facade) GetPath(file service.File) (path string, err error) {
 	}
 
 	if _, err = os.Stat(path); os.IsNotExist(err) {
-		err = service.ErrFileNotFound
+		err = search.ErrFileNotFound
 	}
 	return
 }
 
 // Delete file.
-func (f *Facade) Delete(file service.File) error {
+func (f *Facade) Delete(file search.File) error {
 	return os.Remove(file.Path)
 }
 
 // GetHah by file.
-func (f *Facade) GetHash(fl service.File) (hash string, err error) {
+func (f *Facade) GetHash(fl search.File) (hash string, err error) {
 	file, err := os.Open(fl.Path)
 	if err != nil {
 		return

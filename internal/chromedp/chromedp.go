@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/chromedp/chromedp"
-
 	faceSearch "github.com/geoirb/face-search/internal/face-search"
 )
 

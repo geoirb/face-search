@@ -16,7 +16,6 @@ import (
 
 	"github.com/geoirb/face-search/internal/chromedp"
 	"github.com/geoirb/face-search/internal/config"
-	faceSearch "github.com/geoirb/face-search/internal/face-search"
 	"github.com/geoirb/face-search/internal/face-search/server/http"
 	"github.com/geoirb/face-search/internal/file"
 	"github.com/geoirb/face-search/internal/mongo"

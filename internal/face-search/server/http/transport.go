@@ -87,19 +87,8 @@ func (t *faceSearchTransport) DecodeRequest(req *fasthttp.Request) (sfs search.S
 	return
 }
 
-func (t *faceSearchTransport) EncodeResponse(res *fasthttp.Response, result search.Result, err error) {
-	response := faceSearch{
-		Status:    result.Status,
-		Error:     result.Error,
-		UUID:      result.UUID,
-		PhotoHash: result.PhotoHash,
-		Profiles:  make([]profile, 0, len(result.Profiles)),
-		UpdateAt:  result.UpdateAt,
-		CreateAt:  result.CreateAt,
-	}
-	for _, p := range result.Profiles {
-		response.Profiles = append(response.Profiles, profile(p))
-	}
+func (t *faceSearchTransport) EncodeResponse(res *fasthttp.Response, r search.Result, err error) {
+	response := toResultResponse(r)
 	body, _ := t.builder(response, err)
 	res.SetBody(body)
 }
@@ -119,19 +108,8 @@ func (t *getFaceSearchResultTransport) DecodeRequest(ctx *fasthttp.RequestCtx, r
 	return
 }
 
-func (t *getFaceSearchResultTransport) EncodeResponse(res *fasthttp.Response, result search.Result, err error) {
-	response := faceSearch{
-		Status:    result.Status,
-		Error:     result.Error,
-		UUID:      result.UUID,
-		PhotoHash: result.PhotoHash,
-		Profiles:  make([]profile, 0, len(result.Profiles)),
-		UpdateAt:  result.UpdateAt,
-		CreateAt:  result.CreateAt,
-	}
-	for _, p := range result.Profiles {
-		response.Profiles = append(response.Profiles, profile(p))
-	}
+func (t *getFaceSearchResultTransport) EncodeResponse(res *fasthttp.Response, r search.Result, err error) {
+	response := toResultResponse(r)
 	body, _ := t.builder(response, err)
 	res.SetBody(body)
 }

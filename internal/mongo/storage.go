@@ -7,8 +7,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-
-	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Storage mongo.

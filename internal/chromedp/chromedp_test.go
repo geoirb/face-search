@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	service "github.com/geoirb/face-search/internal/face-search"
+	search "github.com/geoirb/face-search/internal/face-search"
 	p "github.com/geoirb/face-search/internal/plugin"
 	"github.com/stretchr/testify/assert"
 )
@@ -24,7 +24,7 @@ var (
 	testIDResult2 = "search-results2"
 	testIDResult3 = "search-results3"
 
-	testActions = []service.Action{
+	testActions = []search.Action{
 		{
 			Type:   "navigate",
 			Params: []string{testURLSelector},
@@ -72,7 +72,7 @@ func TestActionsBuild(t *testing.T) {
 		pMock,
 	)
 
-	search := service.SearchConfig{
+	search := search.SearchConfig{
 		Timeout:  10 * time.Minute,
 		Actions:  testActions,
 		FilePath: testFile,

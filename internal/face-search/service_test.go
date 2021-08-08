@@ -12,8 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/geoirb/face-search/internal/chromedp"
-	face "github.com/geoirb/face-search/internal/face-search"
-	service "github.com/geoirb/face-search/internal/face-search"
+
+	search "github.com/geoirb/face-search/internal/face-search"
 	"github.com/geoirb/face-search/internal/file"
 	"github.com/geoirb/face-search/internal/mongo"
 	"github.com/geoirb/face-search/internal/parser"
@@ -21,7 +21,7 @@ import (
 
 var (
 	testTimeout = time.Second
-	testActions = []face.Action{
+	testActions = []search.Action{
 		{
 			Type:   "navigate",
 			Params: []string{"test-params-1"},
@@ -32,13 +32,13 @@ var (
 		},
 	}
 
-	testSearchConfig = face.SearchConfig{
+	testSearchConfig = search.SearchConfig{
 		Timeout: testTimeout,
 		Actions: testActions,
 	}
 
-	testResult = service.Result{
-		Status:    service.Success,
+	testResult = search.Result{
+		Status:    search.Success,
 		UUID:      testUUID,
 		PhotoHash: testFileHash,
 		Profiles:  testProfiles,
@@ -48,7 +48,7 @@ var (
 
 	testUUID     = "test-uuid"
 	testFileHash = "test-hash"
-	testProfiles = []service.Profile{
+	testProfiles = []search.Profile{
 		{
 			FullName:    "test-name-1",
 			LinkProfile: "test-link-profile-1",
@@ -80,7 +80,7 @@ var (
 )
 
 func TestGetSearchConfig(t *testing.T) {
-	svc := face.NewService(
+	svc := search.NewService(
 		testSearchConfig,
 		time.Now().Unix,
 		uuid.NewString,
@@ -99,8 +99,8 @@ func TestGetSearchConfig(t *testing.T) {
 }
 
 func TestUpdateSearchConfig(t *testing.T) {
-	svc := face.NewService(
-		face.SearchConfig{},
+	svc := search.NewService(
+		search.SearchConfig{},
 		time.Now().Unix,
 		uuid.NewString,
 		testTimeout,
@@ -124,7 +124,7 @@ func TestGetFaceSearchResult(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			UUID: &testUUID,
 		}
 		expectedResult := testResult
@@ -132,8 +132,8 @@ func TestGetFaceSearchResult(t *testing.T) {
 		m.On("Get", filter).
 			Return(expectedResult, errNilTest)
 
-		svc := face.NewService(
-			face.SearchConfig{},
+		svc := search.NewService(
+			search.SearchConfig{},
 			time.Now().Unix,
 			uuid.NewString,
 			testTimeout,
@@ -144,7 +144,7 @@ func TestGetFaceSearchResult(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.TaskFaceSearch{
+		tfs := search.TaskFaceSearch{
 			UUID: testUUID,
 		}
 
@@ -156,16 +156,16 @@ func TestGetFaceSearchResult(t *testing.T) {
 	t.Run("failed", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			UUID: &testUUID,
 		}
 
 		m := &mongo.Mock{}
 		m.On("Get", filter).
-			Return(service.Result{}, errTest)
+			Return(search.Result{}, errTest)
 
-		svc := face.NewService(
-			face.SearchConfig{},
+		svc := search.NewService(
+			search.SearchConfig{},
 			time.Now().Unix,
 			uuid.NewString,
 			testTimeout,
@@ -176,7 +176,7 @@ func TestGetFaceSearchResult(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.TaskFaceSearch{
+		tfs := search.TaskFaceSearch{
 			UUID: testUUID,
 		}
 
@@ -190,10 +190,10 @@ func TestFaceSearch(t *testing.T) {
 	t.Run("success new face search", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		f0 := service.File{
+		f0 := search.File{
 			URL: testURL,
 		}
-		f1 := service.File{
+		f1 := search.File{
 			Path: testFilePath,
 		}
 		fMock := &file.Mock{}
@@ -204,15 +204,15 @@ func TestFaceSearch(t *testing.T) {
 		fMock.On("Delete", f1).
 			Return(errNilTest)
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			PhotoHash: &testFileHash,
 		}
 
 		m := &mongo.Mock{}
 		m.On("Get", filter).
-			Return(service.Result{}, errNilTest)
-		testResult = service.Result{
-			Status:    service.Success,
+			Return(search.Result{}, errNilTest)
+		testResult = search.Result{
+			Status:    search.Success,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 			Profiles:  testProfiles,
@@ -221,7 +221,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Save", testResult).
 			Return(errNilTest)
 
-		sCfg := service.SearchConfig{
+		sCfg := search.SearchConfig{
 			Timeout:  testTimeout,
 			Actions:  testActions,
 			FilePath: testFilePath,
@@ -235,7 +235,7 @@ func TestFaceSearch(t *testing.T) {
 		parser.On("GetProfileList", testPayload).
 			Return(testProfiles, errNilTest)
 
-		svc := face.NewService(
+		svc := search.NewService(
 			testSearchConfig,
 			testTimeFunc,
 			testUUIDFunc,
@@ -247,14 +247,14 @@ func TestFaceSearch(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.Search{
-			File: service.File{
+		tfs := search.Search{
+			File: search.File{
 				URL: testURL,
 			},
 		}
 
-		expectedResult := service.Result{
-			Status:    service.Fail,
+		expectedResult := search.Result{
+			Status:    search.Fail,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 		}
@@ -267,10 +267,10 @@ func TestFaceSearch(t *testing.T) {
 	t.Run("success repeated face search", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		f0 := service.File{
+		f0 := search.File{
 			URL: testURL,
 		}
-		f1 := service.File{
+		f1 := search.File{
 			Path: testFilePath,
 		}
 		fMock := &file.Mock{}
@@ -281,12 +281,12 @@ func TestFaceSearch(t *testing.T) {
 		fMock.On("Delete", f1).
 			Return(errNilTest)
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			PhotoHash: &testFileHash,
 		}
 
-		failedResult := service.Result{
-			Status:    service.Fail,
+		failedResult := search.Result{
+			Status:    search.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -296,8 +296,8 @@ func TestFaceSearch(t *testing.T) {
 		m := &mongo.Mock{}
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
-		testResult = service.Result{
-			Status:    service.Success,
+		testResult = search.Result{
+			Status:    search.Success,
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
 			Profiles:  testProfiles,
@@ -307,7 +307,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Save", testResult).
 			Return(errNilTest)
 
-		sCfg := service.SearchConfig{
+		sCfg := search.SearchConfig{
 			Timeout:  testTimeout,
 			Actions:  testActions,
 			FilePath: testFilePath,
@@ -321,7 +321,7 @@ func TestFaceSearch(t *testing.T) {
 		parser.On("GetProfileList", testPayload).
 			Return(testProfiles, errNilTest)
 
-		svc := face.NewService(
+		svc := search.NewService(
 			testSearchConfig,
 			testTimeFunc,
 			testUUIDFunc,
@@ -333,8 +333,8 @@ func TestFaceSearch(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.Search{
-			File: service.File{
+		tfs := search.Search{
+			File: search.File{
 				URL: testURL,
 			},
 		}
@@ -349,10 +349,10 @@ func TestFaceSearch(t *testing.T) {
 	t.Run("failed face search", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		f0 := service.File{
+		f0 := search.File{
 			URL: testURL,
 		}
-		f1 := service.File{
+		f1 := search.File{
 			Path: testFilePath,
 		}
 		fMock := &file.Mock{}
@@ -363,12 +363,12 @@ func TestFaceSearch(t *testing.T) {
 		fMock.On("Delete", f1).
 			Return(errNilTest)
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			PhotoHash: &testFileHash,
 		}
 
-		failedResult := service.Result{
-			Status:    service.Fail,
+		failedResult := search.Result{
+			Status:    search.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -379,8 +379,8 @@ func TestFaceSearch(t *testing.T) {
 		m := &mongo.Mock{}
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
-		testResult = service.Result{
-			Status:    service.Fail,
+		testResult = search.Result{
+			Status:    search.Fail,
 			UUID:      testUUID,
 			Error:     errTest.Error(),
 			PhotoHash: testFileHash,
@@ -390,7 +390,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Save", testResult).
 			Return(errNilTest)
 
-		sCfg := service.SearchConfig{
+		sCfg := search.SearchConfig{
 			Timeout:  testTimeout,
 			Actions:  testActions,
 			FilePath: testFilePath,
@@ -402,7 +402,7 @@ func TestFaceSearch(t *testing.T) {
 
 		parser := &parser.Mock{}
 
-		svc := face.NewService(
+		svc := search.NewService(
 			testSearchConfig,
 			testTimeFunc,
 			testUUIDFunc,
@@ -414,8 +414,8 @@ func TestFaceSearch(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.Search{
-			File: service.File{
+		tfs := search.Search{
+			File: search.File{
 				URL: testURL,
 			},
 		}
@@ -430,10 +430,10 @@ func TestFaceSearch(t *testing.T) {
 	t.Run("failed parse face search ", func(t *testing.T) {
 		logger := log.NewJSONLogger(log.NewSyncWriter(os.Stdout))
 
-		f0 := service.File{
+		f0 := search.File{
 			URL: testURL,
 		}
-		f1 := service.File{
+		f1 := search.File{
 			Path: testFilePath,
 		}
 		fMock := &file.Mock{}
@@ -444,12 +444,12 @@ func TestFaceSearch(t *testing.T) {
 		fMock.On("Delete", f1).
 			Return(errNilTest)
 
-		filter := service.FaceSearchFilter{
+		filter := search.FaceSearchFilter{
 			PhotoHash: &testFileHash,
 		}
 
-		failedResult := service.Result{
-			Status:    service.Fail,
+		failedResult := search.Result{
+			Status:    search.Fail,
 			Error:     errTest.Error(),
 			UUID:      testUUID,
 			PhotoHash: testFileHash,
@@ -459,8 +459,8 @@ func TestFaceSearch(t *testing.T) {
 		m := &mongo.Mock{}
 		m.On("Get", filter).
 			Return(failedResult, errNilTest)
-		testResult = service.Result{
-			Status:    service.Fail,
+		testResult = search.Result{
+			Status:    search.Fail,
 			UUID:      testUUID,
 			Error:     errTest.Error(),
 			PhotoHash: testFileHash,
@@ -471,7 +471,7 @@ func TestFaceSearch(t *testing.T) {
 		m.On("Save", testResult).
 			Return(errNilTest)
 
-		sCfg := service.SearchConfig{
+		sCfg := search.SearchConfig{
 			Timeout:  testTimeout,
 			Actions:  testActions,
 			FilePath: testFilePath,
@@ -483,9 +483,9 @@ func TestFaceSearch(t *testing.T) {
 
 		parser := &parser.Mock{}
 		parser.On("GetProfileList", testPayload).
-			Return([]service.Profile{}, errTest)
+			Return([]search.Profile{}, errTest)
 
-		svc := face.NewService(
+		svc := search.NewService(
 			testSearchConfig,
 			testTimeFunc,
 			testUUIDFunc,
@@ -497,8 +497,8 @@ func TestFaceSearch(t *testing.T) {
 			logger,
 		)
 
-		tfs := service.Search{
-			File: service.File{
+		tfs := search.Search{
+			File: search.File{
 				URL: testURL,
 			},
 		}

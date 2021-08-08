@@ -4,8 +4,6 @@ import (
 	"net/http"
 
 	"github.com/fasthttp/router"
-
-	service "github.com/geoirb/face-search/internal/face-search"
 )
 
 const (

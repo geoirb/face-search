@@ -18,7 +18,7 @@ type startFaceSearch struct {
 	URL string `json:"url"`
 }
 
-type faceSearch struct {
+type resultResponse struct {
 	Status    string    `json:"status"`
 	Error     string    `json:"error,omitempty"`
 	UUID      string    `json:"uuid"`

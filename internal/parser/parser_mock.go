@@ -1,9 +1,8 @@
 package parser
 
 import (
-	"github.com/stretchr/testify/mock"
-
 	service "github.com/geoirb/face-search/internal/face-search"
+	"github.com/stretchr/testify/mock"
 )
 
 // Mock ...

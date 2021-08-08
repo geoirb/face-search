@@ -59,6 +59,8 @@ type service struct {
 // NewService returns face search service.
 func NewService(
 	searchConfig SearchConfig,
+	timeFunc func() int64,
+	uuidFunc func() string,
 	storageSaveTimeout time.Duration,
 
 	file file,
@@ -70,6 +72,8 @@ func NewService(
 ) Service {
 	return &service{
 		search:             searchConfig,
+		timeFunc:           timeFunc,
+		uuidFunc:           uuidFunc,
 		storageSaveTimeout: storageSaveTimeout,
 
 		file:     file,
