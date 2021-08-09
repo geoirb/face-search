@@ -12,16 +12,16 @@ type Mock struct {
 }
 
 // GetSearchConfig ...
-func (m *Mock) GetSearchConfig(ctx context.Context) (cfg SearchConfig, err error) {
+func (m *Mock) GetSearchConfig(ctx context.Context) (cfg Config, err error) {
 	args := m.Called()
-	if a, ok := args.Get(0).(SearchConfig); ok {
+	if a, ok := args.Get(0).(Config); ok {
 		return a, args.Error(1)
 	}
-	return SearchConfig{}, nil
+	return Config{}, nil
 }
 
 // UpdateSearchConfig ...
-func (m *Mock) UpdateSearchConfig(ctx context.Context, newSearch SearchConfig) error {
+func (m *Mock) UpdateSearchConfig(ctx context.Context, newSearch Config) error {
 	args := m.Called(newSearch)
 	return args.Error(0)
 

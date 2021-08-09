@@ -16,6 +16,7 @@ import (
 
 	"github.com/geoirb/face-search/internal/chromedp"
 	"github.com/geoirb/face-search/internal/config"
+	search "github.com/geoirb/face-search/internal/face-search"
 	"github.com/geoirb/face-search/internal/face-search/server/http"
 	"github.com/geoirb/face-search/internal/file"
 	"github.com/geoirb/face-search/internal/mongo"
@@ -23,6 +24,7 @@ import (
 	"github.com/geoirb/face-search/internal/plugin"
 	"github.com/geoirb/face-search/internal/proxy"
 	"github.com/geoirb/face-search/internal/response"
+	"github.com/geoirb/face-search/internal/result"
 )
 
 type configuration struct {
@@ -82,12 +84,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	searchConfig := faceSearch.SearchConfig{
+	searchConfig := search.Config{
 		Timeout: searchCfg.Search.Timeout,
-		Actions: make([]faceSearch.Action, 0, len(searchCfg.Search.Actions)),
+		Actions: make([]search.Action, 0, len(searchCfg.Search.Actions)),
 	}
 	for _, a := range searchCfg.Search.Actions {
-		searchConfig.Actions = append(searchConfig.Actions, faceSearch.Action(a))
+		searchConfig.Actions = append(searchConfig.Actions, search.Action(a))
 	}
 
 	file := file.NewFacade(
@@ -97,6 +99,13 @@ func main() {
 	plugin := plugin.NewBuilder(
 		proxy.New(),
 		cfg.PluginDirLayout,
+	)
+
+	resultFactoryFunc := result.NewFactoryFunc(
+		time.Now().Unix,
+		uuid.NewString,
+
+		storage,
 	)
 
 	chromedp := chromedp.New(
@@ -111,15 +120,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	svc := faceSearch.NewService(
+	svc := search.NewService(
 		searchConfig,
-		time.Now().Unix,
-		uuid.NewString,
 		cfg.StorageSaveTimeout,
 
 		file,
+		resultFactoryFunc,
 		chromedp,
-		storage,
 		parser,
 
 		logger,

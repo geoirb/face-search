@@ -72,7 +72,7 @@ func TestActionsBuild(t *testing.T) {
 		pMock,
 	)
 
-	search := search.SearchConfig{
+	search := search.Config{
 		Timeout:  10 * time.Minute,
 		Actions:  testActions,
 		FilePath: testFile,

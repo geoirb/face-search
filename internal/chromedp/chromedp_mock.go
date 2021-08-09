@@ -13,7 +13,7 @@ type Mock struct {
 }
 
 // FaceSearch ...
-func (m *Mock) Face(search faceSearch.SearchConfig) ([]byte, error) {
+func (m *Mock) Face(search faceSearch.Config) ([]byte, error) {
 	args := m.Called(search)
 
 	time.Sleep(search.Timeout)

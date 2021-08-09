@@ -23,7 +23,7 @@ func New(plugin plugin) *Chromedp {
 	}
 }
 
-func (c *Chromedp) Face(search faceSearch.SearchConfig) (result []byte, err error) {
+func (c *Chromedp) Face(search faceSearch.Config) (result []byte, err error) {
 	timeoutContext, cancelAllocCtx, cancelNewContext, cancelWithTimeout, err := c.getTimeoutContext(search.Timeout)
 	if err != nil {
 		return

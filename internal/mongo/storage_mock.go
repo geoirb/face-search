@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"github.com/stretchr/testify/mock"
+
+	search "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Mock ...
@@ -12,16 +14,21 @@ type Mock struct {
 }
 
 // Save ...
-func (m *Mock) Save(ctx context.Context, fs service.Result) error {
+func (m *Mock) Save(ctx context.Context, fs search.Result) error {
+	return m.Called(fs).Error(0)
+}
+
+// Update ...
+func (m *Mock) Update(ctx context.Context, fs search.Result) error {
 	return m.Called(fs).Error(0)
 }
 
 // Get ...
-func (m *Mock) Get(ctx context.Context, filter service.FaceSearchFilter) (service.Result, error) {
+func (m *Mock) Get(ctx context.Context, filter search.ResultFilter) (search.Result, error) {
 	args := m.Called(filter)
 
-	if res, ok := args.Get(0).(service.Result); ok {
+	if res, ok := args.Get(0).(search.Result); ok {
 		return res, args.Error(1)
 	}
-	return service.Result{}, nil
+	return search.Result{}, nil
 }

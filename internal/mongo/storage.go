@@ -7,6 +7,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	search "github.com/geoirb/face-search/internal/face-search"
 )
 
 // Storage mongo.
@@ -43,8 +45,7 @@ func NewStorage(
 }
 
 // Save face search result.
-func (m *Storage) Save(ctx context.Context, result service.Result) (err error) {
-
+func (m *Storage) Save(ctx context.Context, result search.Result) (err error) {
 	faceSearch := faceSearch{
 		Status:    result.Status,
 		Error:     result.Error,
@@ -58,20 +59,35 @@ func (m *Storage) Save(ctx context.Context, result service.Result) (err error) {
 		faceSearch.Profiles = append(faceSearch.Profiles, profile(p))
 	}
 
-	if _, err = m.faceSearchCollection.InsertOne(ctx, faceSearch); mongo.IsDuplicateKeyError(err) {
-		filter := bson.M{
-			"uuid": result.UUID,
-		}
-		update := bson.M{
-			"$set": faceSearch,
-		}
-		_, err = m.faceSearchCollection.UpdateOne(ctx, filter, update)
+	_, err = m.faceSearchCollection.InsertOne(ctx, faceSearch)
+	return
+}
+
+func (m *Storage) Update(ctx context.Context, result search.Result) (err error) {
+	faceSearch := faceSearch{
+		Status:    result.Status,
+		Error:     result.Error,
+		UUID:      result.UUID,
+		PhotoHash: result.PhotoHash,
+		Profiles:  make([]profile, 0, len(result.Profiles)),
+		UpdateAt:  result.UpdateAt,
+		CreateAt:  result.CreateAt,
 	}
-	return err
+	for _, p := range result.Profiles {
+		faceSearch.Profiles = append(faceSearch.Profiles, profile(p))
+	}
+	filter := bson.M{
+		"uuid": result.UUID,
+	}
+	update := bson.M{
+		"$set": faceSearch,
+	}
+	_, err = m.faceSearchCollection.UpdateOne(ctx, filter, update)
+	return
 }
 
 // Get face search result by filter.
-func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (service.Result, error) {
+func (m *Storage) Get(ctx context.Context, filter search.ResultFilter) (search.Result, error) {
 	f := make(bson.M)
 	if filter.UUID != nil {
 		f["uuid"] = *filter.UUID
@@ -84,12 +100,12 @@ func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (ser
 	var faceSearchResult faceSearch
 	if err := m.faceSearchCollection.FindOne(ctx, f).Decode(&faceSearchResult); err != nil {
 		if mongo.ErrNoDocuments == err {
-			err = service.ErrFaceSearchResultNotFound
+			err = search.ErrFaceSearchResultNotFound
 		}
-		return service.Result{}, err
+		return search.Result{}, err
 	}
 
-	res := service.Result{
+	res := search.Result{
 		Status:    faceSearchResult.Status,
 		Error:     faceSearchResult.Error,
 		UUID:      faceSearchResult.UUID,
@@ -101,10 +117,10 @@ func (m *Storage) Get(ctx context.Context, filter service.FaceSearchFilter) (ser
 	return res, nil
 }
 
-func (m *Storage) convertProfileFromMongo(src []profile) []service.Profile {
-	dst := make([]service.Profile, 0, len(src))
+func (m *Storage) convertProfileFromMongo(src []profile) []search.Profile {
+	dst := make([]search.Profile, 0, len(src))
 	for _, p := range src {
-		dst = append(dst, service.Profile(p))
+		dst = append(dst, search.Profile(p))
 	}
 	return dst
 }

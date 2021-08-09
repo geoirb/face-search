@@ -29,7 +29,7 @@ func NewFacade(downloadDir string) *Facade {
 // GetPath of file.
 func (f *Facade) GetPath(file search.File) (path string, err error) {
 	fileName := f.regexpfileName.FindAllStringSubmatch(file.URL, -1)
-	if len(fileName) != 1 && len(fileName[0]) != 2 {
+	if len(fileName) != 1 || len(fileName[0]) != 2 {
 		err = search.ErrFileNameNotFound
 		return
 	}

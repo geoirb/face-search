@@ -6,7 +6,7 @@ import (
 
 var (
 	InProccess = "in_progress"
-	Fail       = "fail"
+	Failed     = "fail"
 	Success    = "success"
 )
 
@@ -29,8 +29,8 @@ type Profile struct {
 	Confidence  string
 }
 
-// SearchConfig ...
-type SearchConfig struct {
+// Config ...
+type Config struct {
 	Timeout  time.Duration
 	Actions  []Action
 	FilePath string
@@ -42,8 +42,8 @@ type Action struct {
 	Params []string
 }
 
-// FaceSearchFilter ...
-type FaceSearchFilter struct {
+// ResultFilter ...
+type ResultFilter struct {
 	UUID      *string
 	PhotoHash *string
 }

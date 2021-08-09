@@ -1,6 +1,10 @@
 package http
 
-func toResultResponse(src faceSearch.Result) resultResponse {
+import (
+	search "github.com/geoirb/face-search/internal/face-search"
+)
+
+func toResultResponse(src search.Result) resultResponse {
 	dst := resultResponse{
 		Status:    src.Status,
 		Error:     src.Error,

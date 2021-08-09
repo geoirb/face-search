@@ -22,7 +22,7 @@ func (t *getConfigTransport) DecodeRequest(req *fasthttp.Request) (err error) {
 	return
 }
 
-func (t *getConfigTransport) EncodeResponse(res *fasthttp.Response, sc search.SearchConfig, err error) {
+func (t *getConfigTransport) EncodeResponse(res *fasthttp.Response, sc search.Config, err error) {
 	response := searchConfig{
 		Timeout: sc.Timeout,
 		Actions: make([]action, 0, len(sc.Actions)),
@@ -45,13 +45,13 @@ func newUpdateConfigTransport(builder builder) *updateConfigTransport {
 	}
 }
 
-func (t *updateConfigTransport) DecodeRequest(req *fasthttp.Request) (cfg search.SearchConfig, err error) {
+func (t *updateConfigTransport) DecodeRequest(req *fasthttp.Request) (cfg search.Config, err error) {
 	request := searchConfig{}
 	if err = json.Unmarshal(req.Body(), &request); err != nil {
 		return
 	}
 
-	cfg = search.SearchConfig{
+	cfg = search.Config{
 		Timeout: request.Timeout,
 		Actions: make([]search.Action, 0, len(request.Actions)),
 	}
