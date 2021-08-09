@@ -23,7 +23,7 @@ type resultResponse struct {
 	Error     string    `json:"error,omitempty"`
 	UUID      string    `json:"uuid"`
 	PhotoHash string    `json:"photo_hash"`
-	Profiles  []profile `json:"profiles,omitempty"`
+	Profiles  []profile `json:"profiles"`
 	UpdateAt  int64     `json:"update_at,omitempty"`
 	CreateAt  int64     `json:"create_at,omitempty"`
 }

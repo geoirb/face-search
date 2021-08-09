@@ -12,7 +12,9 @@ services:
             - 27017:27017
              
     face-search:
-        image: geoirb/face-search
+        build: 
+            context: ..
+            dockerfile: ./docker/face-search/Dockerfile
         environment: 
             STORAGE_CONNECT: mongodb://face-search:face-search@mongo:27017
             CONFIG_FILE: /config/config.yml

@@ -261,3 +261,7 @@ curl --request GET \
   "photo_hash": "yM6wX7Eikr69XaV3jDoIg9NKtPa+9+1h7tPga6QITnQ=",
   "create_at": 1628371204
 }
+
+expected: &result.Facade{Result:service.Result{Status:"success", Error:"", UUID:"test-uuid", PhotoHash:"test-hash", Profiles:[]service.Profile{service.Profile{FullName:"test-name-1", LinkProfile:"test-link-profile-1", LinkPhoto:"test-link-photo-1", Confidence:"test-confidence-1"}, service.Profile{FullName:"test-name-2", LinkProfile:"test-link-profile-2", LinkPhoto:"test-link-photo-2", Confidence:"test-confidence-2"}}, UpdateAt:1, CreateAt:1}, timeFunc:(func() int64)(0x89c6a0), uuidFunc:(func() string)(0x89c6c0), storage:(*mongo.Mock)(0xc0001805a0)}
+
+actual  : &result.Facade{Result:service.Result{Status:"success", Error:"", UUID:"test-uuid", PhotoHash:"test-hash", Profiles:[]service.Profile{service.Profile{FullName:"test-name-1", LinkProfile:"test-link-profile-1", LinkPhoto:"test-link-photo-1", Confidence:"test-confidence-1"}, service.Profile{FullName:"test-name-2", LinkProfile:"test-link-profile-2", LinkPhoto:"test-link-photo-2", Confidence:"test-confidence-2"}}, UpdateAt:1, CreateAt:1}, timeFunc:(func() int64)(0x89c6a0), uuidFunc:(func() string)(0x89c6c0), storage:(*mongo.Mock)(0xc0001805a0)}

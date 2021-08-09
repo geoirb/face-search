@@ -27,10 +27,10 @@ type file interface {
 	Delete(file File) (err error)
 }
 
-type resultFactory func(context.Context, ResultFilter) (result, error)
-
-type result interface {
-	New(ctx context.Context) error
+// TODO убрать экспортируемый интерфейс
+type IResult interface {
+	Get(ctx context.Context, filter ResultFilter) (IResult, error)
+	New(ctx context.Context, hash string) error
 	GetStatus() string
 	GetUUID() string
 	GetData() Result
@@ -51,10 +51,10 @@ type service struct {
 	search              Config
 	resultUpdateTimeout time.Duration
 
-	file      file
-	getResult resultFactory
-	searcher  searcher
-	parser    parser
+	file         file
+	resultFacade IResult
+	searcher     searcher
+	parser       parser
 
 	queue chan struct{}
 
@@ -67,7 +67,7 @@ func NewService(
 	resultUpdateTimeout time.Duration,
 
 	file file,
-	getResult resultFactory,
+	result IResult,
 	searcher searcher,
 	parser parser,
 
@@ -77,10 +77,10 @@ func NewService(
 		search:              searchConfig,
 		resultUpdateTimeout: resultUpdateTimeout,
 
-		file:      file,
-		getResult: getResult,
-		searcher:  searcher,
-		parser:    parser,
+		file:         file,
+		resultFacade: result,
+		searcher:     searcher,
+		parser:       parser,
 
 		queue: make(chan struct{}, 1),
 
@@ -123,9 +123,9 @@ func (s *service) FaceSearch(ctx context.Context, sh Search) (r Result, err erro
 	filter := ResultFilter{
 		PhotoHash: &hash,
 	}
-	result, err := s.getResult(ctx, filter)
+	result, err := s.resultFacade.Get(ctx, filter)
 	if err == ErrFaceSearchResultNotFound {
-		err = result.New(ctx)
+		err = result.New(ctx, hash)
 	}
 	if err != nil {
 		level.Error(logger).Log("get face search result from db", "hash", hash, "err", err)
@@ -136,13 +136,21 @@ func (s *service) FaceSearch(ctx context.Context, sh Search) (r Result, err erro
 		return
 	}
 
-	result.SetInProgress(ctx)
-	go s.start(result, file, log.WithPrefix(logger, "uuid", result.GetUUID()))
+	logger = log.WithPrefix(logger, "uuid", result.GetUUID())
+	if err = result.SetInProgress(ctx); err != nil {
+		level.Error(logger).Log("result set in progress", "err", err)
+		return
+	}
+
+	go s.start(result, file, logger)
+
+	r = result.GetData()
 	return
 }
 
-func (s *service) start(result result, file File, logger log.Logger) {
+func (s *service) start(result IResult, file File, logger log.Logger) {
 	s.queue <- struct{}{}
+
 	defer func() {
 		s.file.Delete(file)
 		<-s.queue
@@ -155,8 +163,10 @@ func (s *service) start(result result, file File, logger log.Logger) {
 		Actions:  s.search.Actions,
 		FilePath: file.Path,
 	}
+
 	payload, err := s.searcher.Face(search)
 	if err != nil {
+		level.Error(logger).Log("msg", "result face searcher", "err", err)
 		ctx, cancel := context.WithTimeout(context.Background(), s.resultUpdateTimeout)
 		defer cancel()
 		if err := result.SetFailed(ctx, err); err != nil {
@@ -166,6 +176,7 @@ func (s *service) start(result result, file File, logger log.Logger) {
 	}
 	profiles, err := s.parser.GetProfileList(payload)
 	if err != nil {
+		level.Error(logger).Log("msg", "result parse", "err", err)
 		ctx, cancel := context.WithTimeout(context.Background(), s.resultUpdateTimeout)
 		defer cancel()
 		if err := result.SetFailed(ctx, err); err != nil {
@@ -173,6 +184,7 @@ func (s *service) start(result result, file File, logger log.Logger) {
 		}
 		return
 	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), s.resultUpdateTimeout)
 	defer cancel()
 	if err := result.SetSuccess(ctx, profiles); err != nil {
@@ -186,10 +198,11 @@ func (s *service) GetFaceSearchResult(ctx context.Context, t TaskFaceSearch) (r 
 	filter := ResultFilter{
 		UUID: &t.UUID,
 	}
-	result, err := s.getResult(ctx, filter)
+	result, err := s.resultFacade.Get(ctx, filter)
 	if err != nil {
 		level.Error(logger).Log("get result from db", "uuid", t.UUID, "err", err)
+	} else {
+		r = result.GetData()
 	}
-	r = result.GetData()
 	return
 }

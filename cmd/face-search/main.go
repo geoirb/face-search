@@ -101,7 +101,7 @@ func main() {
 		cfg.PluginDirLayout,
 	)
 
-	resultFactoryFunc := result.NewFactoryFunc(
+	resultFacade := result.NewFacade(
 		time.Now().Unix,
 		uuid.NewString,
 
@@ -125,12 +125,14 @@ func main() {
 		cfg.StorageSaveTimeout,
 
 		file,
-		resultFactoryFunc,
+		resultFacade,
 		chromedp,
 		parser,
 
 		logger,
 	)
+
+	svc = search.NewValidator(svc)
 
 	router := router.New()
 	http.Routing(router, svc, response.Build)
