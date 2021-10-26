@@ -52,11 +52,6 @@ func main() {
 	logger = log.WithPrefix(logger, "service", serviceName)
 	logger = log.With(logger, "ts", log.DefaultTimestampUTC)
 
-	if time.Since(time.Date(2020, time.August, 15, 0, 0, 0, 0, time.Now().Location())) < 0 {
-		level.Error(logger).Log("msg", "trial version")
-		return
-	}
-
 	var cfg configuration
 	if err := envconfig.Process(prefixCfg, &cfg); err != nil {
 		level.Error(logger).Log("msg", "configuration", "err", err)
